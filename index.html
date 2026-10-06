@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Image Builder · Skill Icons</title>
+<style>
+  * { box-sizing: border-box; }
+  :root{
+    --bg:#080d18;
+    --panel:#0e1626;
+    --panel-2:#131d31;
+    --border:rgba(120,170,255,.10);
+    --border-strong:rgba(120,170,255,.20);
+    --text:#e8eefb;
+    --muted:#8296b8;
+    --accent:#3b82f6;
+    --accent-hover:#2563eb;
+    --accent-deep:#1d4ed8;
+    --accent-soft:rgba(59,130,246,.14);
+    --radius:14px;
+  }
+  html,body{ margin:0; padding:0; }
+  body{
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+                Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Header ---------- */
+  .site-header{
+    max-width:1460px; width:100%; margin:0 auto;
+    padding:26px 20px 18px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap;
+  }
+  .brand{ display:flex; align-items:center; gap:14px; min-width:0; }
+  .brand-logo{
+    height:34px; width:auto; display:block; flex:none;
+    max-width:240px; object-fit:contain;
+  }
+  .brand-sep{
+    width:1px; height:22px; flex:none;
+    background:var(--border-strong);
+  }
+  .brand h1{
+    margin:0; font-size:20px; letter-spacing:.2px; font-weight:700;
+    white-space:nowrap;
+  }
+
+  .header-right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .header-note{
+    font-size:12px; color:var(--muted);
+    border:1px solid var(--border); border-radius:999px;
+    padding:6px 13px; background:rgba(255,255,255,.02);
+  }
+  .header-note b{ color:#93bbff; font-weight:600; }
+
+  .lang-select{
+    appearance:none; -webkit-appearance:none; -moz-appearance:none;
+    background-color:var(--panel-2);
+    border:1px solid var(--border-strong);
+    color:var(--text);
+    font-family:inherit; font-size:12px; font-weight:600;
+    padding:6px 28px 6px 12px;
+    border-radius:999px;
+    cursor:pointer; outline:none;
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238296b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 10px center;
+    background-size:11px;
+    transition:.15s;
+  }
+  .lang-select:hover{ border-color:var(--accent); }
+  .lang-select:focus{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .lang-select option{ background:#0e1626; color:var(--text); }
+
+  /* ---------- Layout ---------- */
+  main{
+    max-width:1460px; width:100%; margin:0 auto;
+    padding:0 20px 60px;
+    display:grid; grid-template-columns:minmax(0,1fr) 400px; gap:22px;
+    align-items:start;
+  }
+  @media (max-width: 1020px){
+    main{ grid-template-columns:1fr; }
+  }
+
+  /* ---------- Library ---------- */
+  .library{ min-width:0; }
+  .lib-toolbar{ display:flex; gap:10px; align-items:center; margin-bottom:12px; }
+  .search-wrap{ position:relative; flex:1; }
+  .search-wrap svg{
+    position:absolute; left:13px; top:50%; transform:translateY(-50%);
+    width:15px; height:15px; opacity:.45; pointer-events:none;
+  }
+  .search-wrap input{
+    width:100%; padding:12px 14px 12px 38px;
+    border-radius:12px; background:var(--panel);
+    border:1px solid var(--border); color:var(--text);
+    font-size:14px; outline:none; font-family:inherit; transition:.15s;
+  }
+  .search-wrap input::placeholder{ color:#5f6b83; }
+  .search-wrap input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .btn{
+    border:1px solid var(--border-strong); background:var(--panel-2);
+    color:var(--text); padding:11px 15px; border-radius:11px;
+    font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;
+    transition:.15s; white-space:nowrap;
+  }
+  .btn:hover{ background:#1a2740; border-color:var(--accent); }
+  .btn.primary{
+    background:var(--accent-hover);
+    border-color:transparent; color:#fff; width:100%; padding:12px;
+    box-shadow:0 8px 20px rgba(59,130,246,.28);
+  }
+  .btn.primary:hover{ background:var(--accent-deep); }
+  .btn.primary.copied{ background:#17a97a; box-shadow:0 8px 20px rgba(23,169,122,.25); }
+
+  .lib-meta{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:12px; color:var(--muted); margin-bottom:12px; padding:0 3px;
+  }
+  .lib-meta b{ color:#93bbff; }
+
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(86px,1fr));
+    gap:8px;
+  }
+  .icon-card{
+    position:relative; display:flex; flex-direction:column;
+    align-items:center; gap:7px; padding:11px 4px 9px;
+    border-radius:13px; background:var(--panel);
+    border:1px solid var(--border); cursor:pointer;
+    transition:transform .13s ease, border-color .13s, background .13s;
+    font-family:inherit; color:inherit; overflow:hidden;
+  }
+  .icon-card:hover{
+    transform:translateY(-2px);
+    border-color:var(--accent);
+    background:#132038;
+  }
+  .icon-card img{ width:32px; height:32px; display:block; }
+  .icon-card span{
+    font-size:10px; color:var(--muted); max-width:100%;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .icon-card.selected{
+    border-color:var(--accent);
+    background:var(--accent-soft);
+    box-shadow:0 0 0 1px var(--accent), 0 8px 18px rgba(59,130,246,.22);
+  }
+  .icon-card.selected span{ color:#9fc4ff; }
+  .icon-card .check{
+    position:absolute; top:6px; right:6px;
+    width:16px; height:16px; border-radius:50%;
+    background:var(--accent); color:#fff; font-style:normal;
+    font-size:10px; line-height:1; display:grid; place-items:center;
+    opacity:0; transform:scale(.4); transition:.16s;
+  }
+  .icon-card.selected .check{ opacity:1; transform:scale(1); }
+  .empty{ padding:40px 10px; text-align:center; color:var(--muted); font-size:14px; }
+
+  /* ---------- Panel ---------- */
+  .panel{ display:flex; flex-direction:column; gap:16px; min-width:0; }
+  @media (min-width: 1021px){
+    .panel{
+      position:sticky; top:16px;
+      max-height:calc(100vh - 32px); overflow-y:auto;
+      padding-right:4px;
+    }
+  }
+  .card{
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:18px; padding:16px;
+  }
+  .card-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:12px; gap:10px;
+  }
+  .card-head h2{ margin:0; font-size:13px; letter-spacing:.4px; text-transform:uppercase; color:#a9b6cf; }
+  .hint{
+    font-size:11px; color:var(--muted);
+    background:rgba(255,255,255,.05); border-radius:999px; padding:3px 9px;
+  }
+
+  /* 已选卡片头部操作区 */
+  .head-actions{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .sort-btn{
+    display:inline-flex; align-items:center; gap:5px;
+    padding:5px 10px; border-radius:999px; cursor:pointer;
+    background:#131d31; border:1px solid var(--border-strong);
+    color:#c6d5ee; font-family:inherit; font-size:11.5px; font-weight:700;
+    letter-spacing:.3px; transition:.15s;
+  }
+  .sort-btn svg{ width:12px; height:12px; opacity:.75; }
+  .sort-btn:hover:not(:disabled){
+    background:#1a2740; border-color:var(--accent); color:#fff;
+  }
+  .sort-btn:hover:not(:disabled) svg{ opacity:1; }
+  .sort-btn:disabled{ opacity:.35; cursor:not-allowed; }
+
+  .preview-box{
+    min-height:92px; border-radius:13px; padding:14px;
+    display:flex; align-items:center; justify-content:center;
+    background:#0a1120; border:1px solid var(--border);
+    transition:background .2s; overflow:auto;
+  }
+  .preview-box.light{ background:#ffffff; border-color:#e3e7ef; }
+  .preview-box img{ display:block; max-width:100%; }
+  .placeholder{ font-size:12.5px; color:#7b879c; text-align:center; }
+
+  .settings{ margin-top:14px; display:flex; flex-direction:column; gap:14px; }
+  .setting label{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:12px; color:var(--muted); margin-bottom:8px;
+  }
+  .setting label b{ color:#93bbff; font-size:12px; }
+  .segmented{
+    display:flex; gap:4px; padding:4px;
+    background:#0a1120; border:1px solid var(--border); border-radius:11px;
+  }
+  .segmented button{
+    flex:1; border:0; background:transparent; color:var(--muted);
+    padding:8px 10px; border-radius:8px; font-size:12.5px;
+    font-weight:600; cursor:pointer; font-family:inherit; transition:.15s;
+  }
+  .segmented button:hover{ color:var(--text); }
+  .segmented button.active{
+    background:var(--accent-hover);
+    color:#fff; box-shadow:0 4px 12px rgba(59,130,246,.28);
+  }
+  input[type="range"]{
+    width:100%; -webkit-appearance:none; appearance:none;
+    height:5px; border-radius:99px; outline:none;
+    background:linear-gradient(90deg,var(--accent) var(--fill,30%), #1a2338 var(--fill,30%));
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; width:17px; height:17px; border-radius:50%;
+    background:#fff; border:3px solid var(--accent); cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,.5);
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:14px; height:14px; border-radius:50%; background:#fff;
+    border:3px solid var(--accent); cursor:pointer;
+  }
+
+  /* Selected chips */
+  .selected-list{
+    list-style:none; margin:0; padding:0;
+    display:flex; flex-wrap:wrap; gap:6px;
+    max-height:172px; overflow-y:auto;
+  }
+  .selected-list:empty::after{
+    content:attr(data-empty);
+    font-size:12.5px; color:#5f6b83;
+  }
+  .chip{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:4px 6px 4px 4px; border-radius:999px;
+    background:#131d31; border:1px solid var(--border-strong);
+    font-size:11.5px; cursor:grab; user-select:none;
+    transition:.14s;
+  }
+  .chip:hover{ border-color:var(--accent); }
+  .chip.dragging{ opacity:.35; }
+  .chip img{ width:16px; height:16px; display:block; pointer-events:none; }
+  .chip span{ pointer-events:none; color:#c6d5ee; }
+  .chip-x{
+    border:0; background:rgba(255,255,255,.07); color:#93a0b8;
+    width:16px; height:16px; border-radius:50%; font-size:11px; line-height:1;
+    display:grid; place-items:center; cursor:pointer; padding:0;
+    transition:.14s; font-family:inherit;
+  }
+  .chip-x:hover{ background:#ff5c7a; color:#fff; }
+
+  /* Code */
+  .tabs{
+    display:flex; gap:4px; padding:4px; margin-bottom:12px;
+    background:#0a1120; border:1px solid var(--border); border-radius:11px;
+  }
+  .tabs button{
+    flex:1; border:0; background:transparent; color:var(--muted);
+    padding:8px 6px; border-radius:8px; font-size:12px; font-weight:600;
+    cursor:pointer; font-family:inherit; transition:.15s;
+  }
+  .tabs button:hover{ color:var(--text); }
+  .tabs button.active{ background:#1a2740; color:#fff; }
+  .code-card pre{
+    margin:0 0 12px; padding:12px; border-radius:11px;
+    background:#060b16; border:1px solid var(--border);
+    max-height:200px; overflow:auto;
+  }
+  .code-card code{
+    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size:11.5px; line-height:1.6; color:#8fd8c4;
+    white-space:pre-wrap; word-break:break-all;
+  }
+
+  ::-webkit-scrollbar{ width:8px; height:8px; }
+  ::-webkit-scrollbar-track{ background:transparent; }
+  ::-webkit-scrollbar-thumb{ background:#1f2d47; border-radius:99px; }
+  ::-webkit-scrollbar-thumb:hover{ background:#2c3f61; }
+
+  footer{
+    text-align:center; font-size:12px; color:#5f6b83;
+    padding:0 20px 36px;
+  }
+  footer a{ color:#6ba3ff; text-decoration:none; }
+  footer a:hover{ text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <img class="brand-logo"
+         src="https://github.com/tandpfun/skill-icons/raw/main/.github/text-logo.svg"
+         alt="Skill Icons" />
+    <span class="brand-sep"></span>
+    <h1 data-i18n="title">Image Builder</h1>
+  </div>
+
+  <div class="header-right">
+    <div class="header-note">Powered by <b>Cloudflare Workers</b> · skillicons.dev</div>
+    <select class="lang-select" id="langSelect" aria-label="Language">
+      <option value="zh">中文</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+</header>
+
+<main>
+  <!-- ============ 图标库 ============ -->
+  <section class="library">
+    <div class="lib-toolbar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path>
+        </svg>
+        <input id="search" type="search" data-i18n-ph="searchPlaceholder"
+               placeholder="搜索图标，例如 react、docker、py …" autocomplete="off" />
+      </div>
+      <button class="btn" id="clearBtn" data-i18n="clear">清空</button>
+    </div>
+
+    <div class="lib-meta">
+      <span id="selStat"></span>
+      <span id="totalStat"></span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="emptySearch" data-i18n="noMatch" hidden>没有匹配的图标 🤔</div>
+  </section>
+
+  <!-- ============ 配置面板 ============ -->
+  <aside class="panel">
+
+    <!-- 预览 -->
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="livePreview">实时预览</h2>
+        <span class="hint" id="sizeHint">0 个</span>
+      </div>
+      <div class="preview-box" id="previewBox">
+        <img id="previewImg" alt="Icon preview" hidden />
+        <div class="placeholder" id="previewPlaceholder"
+             data-i18n="previewPlaceholder">从左侧选择图标开始搭建 👈</div>
+      </div>
+
+      <div class="settings">
+        <div class="setting">
+          <label><span data-i18n="theme">主题</span> <b id="themeVal">dark</b></label>
+          <div class="segmented" id="themeSeg">
+            <button type="button" data-theme="dark" class="active" data-i18n="themeDark">深色背景</button>
+            <button type="button" data-theme="light" data-i18n="themeLight">浅色背景</button>
+          </div>
+        </div>
+        <div class="setting">
+          <label><span data-i18n="perline">每行图标数</span> <b id="perlineVal">15</b></label>
+          <input type="range" id="perline" min="1" max="50" value="15" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 已选 -->
+    <div class="card">
+      <div class="card-head">
+        <h2 data-i18n="selectedIcons">已选图标</h2>
+        <div class="head-actions">
+          <span class="hint" data-i18n="dragHint">可拖拽排序</span>
+          <button class="sort-btn" id="sortBtn" type="button" title="Sort">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h11M3 12h8M3 18h5"></path>
+              <path d="M17 5v14M13.5 15.5L17 19l3.5-3.5"></path>
+            </svg>
+            <span id="sortLabel">A→Z</span>
+          </button>
+        </div>
+      </div>
+      <ul class="selected-list" id="selectedList"></ul>
+    </div>
+
+    <!-- 导出 -->
+    <div class="card code-card">
+      <div class="card-head">
+        <h2 data-i18n="exportCode">导出代码</h2>
+      </div>
+      <div class="tabs" id="tabs">
+        <button type="button" data-tab="md" class="active">Markdown</button>
+        <button type="button" data-tab="html">HTML</button>
+        <button type="button" data-tab="url">URL</button>
+      </div>
+      <pre><code id="codeOut"></code></pre>
+      <button class="btn primary" id="copyBtn" data-i18n="copyCode">复制代码</button>
+    </div>
+
+  </aside>
+</main>
+
+<footer id="footer" data-i18n-html="footer"></footer>
+
+<script>
+/* =========================================================
+   i18n 文案
+   ========================================================= */
+const I18N = {
+  zh: {
+    title: 'Image Builder',
+    searchPlaceholder: '搜索图标，例如 react、docker、py …',
+    clear: '清空',
+    noMatch: '没有匹配的图标 🤔',
+    livePreview: '实时预览',
+    previewPlaceholder: '从左侧选择图标开始搭建 👈',
+    theme: '主题',
+    themeDark: '深色背景',
+    themeLight: '浅色背景',
+    perline: '每行图标数',
+    selectedIcons: '已选图标',
+    dragHint: '可拖拽排序',
+    exportCode: '导出代码',
+    copyCode: '复制代码',
+    copied: '已复制 ✓',
+    pickFirst: '请先在上方选择至少一个图标…',
+    emptySelected: '还没有选择图标',
+    sortAsc: 'A→Z',
+    sortDesc: 'Z→A',
+    sortAscTitle: '按字母升序 A→Z 排序',
+    sortDescTitle: '按字母降序 Z→A 排序',
+    selectedCountHtml: n => `已选 <b>${n}</b> 个图标`,
+    totalCountHtml: n => `共 <b>${n}</b> 个可用图标`,
+    countUnit: n => `${n} 个`,
+    footer: '图标由 <a href="https://skillicons.dev" target="_blank" rel="noopener">skillicons.dev</a> 提供 · 本页面仅用于生成配置代码'
+  },
+  en: {
+    title: 'Image Builder',
+    searchPlaceholder: 'Search icons, e.g. react, docker, py …',
+    clear: 'Clear',
+    noMatch: 'No matching icons 🤔',
+    livePreview: 'Live Preview',
+    previewPlaceholder: 'Pick icons on the left to start 👈',
+    theme: 'Theme',
+    themeDark: 'Dark',
+    themeLight: 'Light',
+    perline: 'Icons per line',
+    selectedIcons: 'Selected Icons',
+    dragHint: 'Drag to reorder',
+    exportCode: 'Export Code',
+    copyCode: 'Copy Code',
+    copied: 'Copied ✓',
+    pickFirst: 'Select at least one icon first…',
+    emptySelected: 'No icons selected yet',
+    sortAsc: 'A→Z',
+    sortDesc: 'Z→A',
+    sortAscTitle: 'Sort alphabetically (A→Z)',
+    sortDescTitle: 'Sort alphabetically (Z→A)',
+    selectedCountHtml: n => `<b>${n}</b> selected`,
+    totalCountHtml: n => `<b>${n}</b> available`,
+    countUnit: n => n === 1 ? '1 icon' : `${n} icons`,
+    footer: 'Icons by <a href="https://skillicons.dev" target="_blank" rel="noopener">skillicons.dev</a> · This page only generates configuration code'
+  }
+};
+
+/* =========================================================
+   图标 ID 列表（来自 README 的 Icons List 表格）
+   ========================================================= */
+const ICONS = `ableton activitypub actix adonis ae aiscript alpinejs anaconda androidstudio
+angular ansible apollo apple appwrite arch arduino astro atom au autocad aws azul azure babel
+bash bevy bitbucket blender bootstrap bsd bun c cs cpp crystal cassandra clion clojure
+cloudflare cmake codepen coffeescript css cypress d3 dart debian deno devto discord bots
+discordjs django docker dotnet dynamodb eclipse elasticsearch electron elixir elysia emacs
+ember emotion express fastapi fediverse figma firebase flask flutter forth fortran
+gamemakerstudio gatsby gcp git github githubactions gitlab gmail gherkin go gradle godot
+grafana graphql gtk gulp haskell haxe haxeflixel heroku hibernate html htmx idea ai instagram
+ipfs java js jenkins jest jquery kafka kali kotlin ktor kubernetes laravel latex less linkedin
+linux lit lua md mastodon materialui matlab maven mint misskey mongodb mysql neovim nestjs
+netlify nextjs nginx nim nix nodejs notion npm nuxtjs obsidian ocaml octave opencv openshift
+openstack p5js perl ps php phpstorm pinia pkl plan9 planetscale pnpm postgres postman
+powershell pr prisma processing prometheus pug pycharm py pytorch qt r rabbitmq rails
+raspberrypi react reactivex redhat redis redux regex remix replit rider robloxstudio rocket
+rollupjs ros ruby rust sass spring sqlite stackoverflow styledcomponents sublime supabase
+scala sklearn selenium sentry sequelize sketchup solidity solidjs svelte svg swift symfony
+tailwind tauri tensorflow terraform threejs twitter ts ubuntu unity unreal v vala vercel vim
+visualstudio vite vitest vscode vscodium vue vuetify wasm webflow webpack webstorm windicss
+windows wordpress workers xd yarn yew zig`.trim().split(/\s+/);
+
+const BASE = 'https://skillicons.dev/icons';
+
+/* =========================================================
+   状态
+   ========================================================= */
+const state = {
+  selected: [],
+  theme: 'dark',
+  perline: 15,
+  tab: 'md',
+  query: '',
+  lang: 'zh'
+};
+
+/* 语言默认跟随浏览器 */
+(function initLang(){
+  const nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  state.lang = nav.startsWith('zh') ? 'zh' : 'en';
+})();
+
+/* =========================================================
+   DOM
+   ========================================================= */
+const grid            = document.getElementById('grid');
+const searchInput     = document.getElementById('search');
+const clearBtn        = document.getElementById('clearBtn');
+const emptySearch     = document.getElementById('emptySearch');
+const selStatEl       = document.getElementById('selStat');
+const totalStatEl     = document.getElementById('totalStat');
+const previewBox      = document.getElementById('previewBox');
+const previewImg      = document.getElementById('previewImg');
+const previewHolder   = document.getElementById('previewPlaceholder');
+const sizeHint        = document.getElementById('sizeHint');
+const themeSeg        = document.getElementById('themeSeg');
+const themeVal        = document.getElementById('themeVal');
+const perlineInput    = document.getElementById('perline');
+const perlineVal      = document.getElementById('perlineVal');
+const selectedListEl  = document.getElementById('selectedList');
+const tabsEl          = document.getElementById('tabs');
+const codeOut         = document.getElementById('codeOut');
+const copyBtn         = document.getElementById('copyBtn');
+const sortBtn         = document.getElementById('sortBtn');
+const sortLabel       = document.getElementById('sortLabel');
+const langSelect      = document.getElementById('langSelect');
+
+const cards = new Map(); // id -> element
+
+/* 当前语言字典 */
+function dict(){ return I18N[state.lang]; }
+
+/* =========================================================
+   构建图标网格
+   ========================================================= */
+function buildGrid() {
+  const frag = document.createDocumentFragment();
+
+  ICONS.forEach(id => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'icon-card';
+    btn.dataset.id = id;
+    btn.title = id;
+
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.src = `${BASE}?i=${encodeURIComponent(id)}`;
+    img.alt = id;
+
+    const label = document.createElement('span');
+    label.textContent = id;
+
+    const check = document.createElement('i');
+    check.className = 'check';
+    check.textContent = '✓';
+
+    btn.append(img, label, check);
+    btn.addEventListener('click', () => toggleIcon(id));
+
+    frag.appendChild(btn);
+    cards.set(id, btn);
+  });
+
+  grid.appendChild(frag);
+}
+
+/* =========================================================
+   选择 / 取消选择
+   ========================================================= */
+function toggleIcon(id) {
+  const i = state.selected.indexOf(id);
+  if (i > -1) state.selected.splice(i, 1);
+  else state.selected.push(id);
+  sync();
+}
+
+/* =========================================================
+   URL / 代码生成
+   ========================================================= */
+function buildUrl() {
+  let url = `${BASE}?i=${state.selected.join(',')}`;
+  if (state.theme === 'light') url += '&theme=light';
+  if (state.perline !== 15) url += `&perline=${state.perline}`;
+  return url;
+}
+
+function buildCode() {
+  const url = buildUrl();
+
+  if (state.selected.length === 0) {
+    return dict().pickFirst;
+  }
+
+  if (state.tab === 'md') {
+    return `[![My Skills](${url})](https://skillicons.dev)`;
+  }
+  if (state.tab === 'html') {
+    return `<p align="center">\n  <a href="https://skillicons.dev">\n    <img src="${url}" />\n  </a>\n</p>`;
+  }
+  return url;
+}
+
+/* =========================================================
+   渲染：已选列表
+   ========================================================= */
+let dragFrom = null;
+
+function renderSelected() {
+  selectedListEl.innerHTML = '';
+
+  state.selected.forEach((id, index) => {
+    const li = document.createElement('li');
+    li.className = 'chip';
+    li.draggable = true;
+    li.dataset.index = String(index);
+
+    const img = document.createElement('img');
+    img.src = `${BASE}?i=${encodeURIComponent(id)}`;
+    img.alt = '';
+
+    const span = document.createElement('span');
+    span.textContent = id;
+
+    const x = document.createElement('button');
+    x.type = 'button';
+    x.className = 'chip-x';
+    x.textContent = '×';
+    x.title = 'Remove';
+    x.addEventListener('click', e => {
+      e.stopPropagation();
+      state.selected.splice(index, 1);
+      sync();
+    });
+
+    li.append(img, span, x);
+
+    li.addEventListener('dragstart', e => {
+      dragFrom = index;
+      li.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', id); } catch (_) {}
+    });
+    li.addEventListener('dragend', () => {
+      dragFrom = null;
+      li.classList.remove('dragging');
+    });
+    li.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    });
+    li.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragFrom === null || dragFrom === index) return;
+      const [moved] = state.selected.splice(dragFrom, 1);
+      state.selected.splice(index, 0, moved);
+      dragFrom = null;
+      sync();
+    });
+
+    selectedListEl.appendChild(li);
+  });
+}
+
+/* =========================================================
+   渲染：预览
+   ========================================================= */
+function renderPreview() {
+  previewBox.classList.toggle('light', state.theme === 'light');
+
+  if (state.selected.length === 0) {
+    previewImg.hidden = true;
+    previewImg.removeAttribute('src');
+    previewHolder.hidden = false;
+    return;
+  }
+
+  previewHolder.hidden = true;
+  previewImg.hidden = false;
+  previewImg.src = buildUrl();
+}
+
+/* =========================================================
+   总同步
+   ========================================================= */
+function sync() {
+  const d = dict();
+  const n = state.selected.length;
+
+  // 1. 卡片高亮
+  cards.forEach((el, id) => {
+    el.classList.toggle('selected', state.selected.includes(id));
+  });
+
+  // 2. 计数 / 提示
+  selStatEl.innerHTML = d.selectedCountHtml(n);
+  totalStatEl.innerHTML = d.totalCountHtml(ICONS.length);
+  sizeHint.textContent = d.countUnit(n);
+
+  // 3. 排序按钮状态
+  sortBtn.disabled = n === 0;
+
+  // 4. 复制按钮（非“已复制”状态才刷新文字）
+  if (!copyBtn.classList.contains('copied')) {
+    copyBtn.textContent = d.copyCode;
+  }
+
+  // 5. 已选列表
+  renderSelected();
+
+  // 6. 预览
+  renderPreview();
+
+  // 7. 代码
+  codeOut.textContent = buildCode();
+}
+
+/* =========================================================
+   搜索过滤
+   ========================================================= */
+searchInput.addEventListener('input', () => {
+  state.query = searchInput.value.trim().toLowerCase();
+  let visible = 0;
+
+  cards.forEach((el, id) => {
+    const match = !state.query || id.includes(state.query);
+    el.hidden = !match;
+    if (match) visible++;
+  });
+
+  emptySearch.hidden = visible > 0;
+});
+
+/* =========================================================
+   主题切换
+   ========================================================= */
+themeSeg.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-theme]');
+  if (!btn) return;
+  state.theme = btn.dataset.theme;
+  [...themeSeg.children].forEach(b => b.classList.toggle('active', b === btn));
+  themeVal.textContent = state.theme;
+  sync();
+});
+
+/* =========================================================
+   每行图标数
+   ========================================================= */
+function paintRange() {
+  const min = +perlineInput.min, max = +perlineInput.max;
+  const pct = ((state.perline - min) / (max - min)) * 100;
+  perlineInput.style.setProperty('--fill', pct + '%');
+}
+
+perlineInput.addEventListener('input', () => {
+  state.perline = +perlineInput.value;
+  perlineVal.textContent = state.perline;
+  paintRange();
+  sync();
+});
+
+/* =========================================================
+   代码 Tab 切换
+   ========================================================= */
+tabsEl.addEventListener('click', e => {
+  const btn = e.target.closest('button[data-tab]');
+  if (!btn) return;
+  state.tab = btn.dataset.tab;
+  [...tabsEl.children].forEach(b => b.classList.toggle('active', b === btn));
+  codeOut.textContent = buildCode();
+});
+
+/* =========================================================
+   按字母排序（A→Z / Z→A 交替）
+   ========================================================= */
+let sortDir = 'asc';
+
+function updateSortBtn() {
+  const d = dict();
+  sortLabel.textContent = sortDir === 'asc' ? d.sortAsc : d.sortDesc;
+  sortBtn.title = sortDir === 'asc' ? d.sortAscTitle : d.sortDescTitle;
+}
+
+sortBtn.addEventListener('click', () => {
+  if (state.selected.length === 0) return;
+  const dir = sortDir === 'asc' ? 1 : -1;
+  state.selected.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }) * dir);
+  sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  updateSortBtn();
+  sync();
+});
+
+/* =========================================================
+   复制
+   ========================================================= */
+copyBtn.addEventListener('click', async () => {
+  const text = buildCode();
+  if (!text || text === dict().pickFirst) return;
+
+  let ok = false;
+  try {
+    await navigator.clipboard.writeText(text);
+    ok = true;
+  } catch (_) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { ok = document.execCommand('copy'); } catch (_) {}
+    document.body.removeChild(ta);
+  }
+
+  if (ok) {
+    copyBtn.textContent = dict().copied;
+    copyBtn.classList.add('copied');
+    setTimeout(() => {
+      copyBtn.classList.remove('copied');
+      copyBtn.textContent = dict().copyCode;
+    }, 1400);
+  }
+});
+
+/* =========================================================
+   清空
+   ========================================================= */
+clearBtn.addEventListener('click', () => {
+  if (state.selected.length === 0) return;
+  state.selected = [];
+  sync();
+});
+
+/* =========================================================
+   语言切换
+   ========================================================= */
+function applyLang() {
+  const d = dict();
+  document.documentElement.lang = state.lang === 'zh' ? 'zh-CN' : 'en';
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.dataset.i18n;
+    if (d[k] != null) el.textContent = d[k];
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const k = el.dataset.i18nHtml;
+    if (d[k] != null) el.innerHTML = d[k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const k = el.dataset.i18nPh;
+    if (d[k] != null) el.placeholder = d[k];
+  });
+
+  selectedListEl.dataset.empty = d.emptySelected;
+
+  updateSortBtn();
+  sync();
+}
+
+langSelect.addEventListener('change', () => {
+  state.lang = langSelect.value;
+  applyLang();
+});
+
+/* =========================================================
+   初始化
+   ========================================================= */
+langSelect.value = state.lang;
+buildGrid();
+paintRange();
+applyLang();
+</script>
+</body>
+</html>
