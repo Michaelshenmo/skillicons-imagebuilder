@@ -206,6 +206,38 @@
   .sort-btn:hover:not(:disabled) svg{ opacity:1; }
   .sort-btn:disabled{ opacity:.35; cursor:not-allowed; }
 
+  /* 导入行 */
+  .import-row{ display:flex; gap:6px; margin-bottom:8px; }
+  .import-row input{
+    flex:1; min-width:0; padding:8px 11px;
+    border-radius:9px; background:#0a1120;
+    border:1px solid var(--border); color:var(--text);
+    font-size:12px; outline:none; font-family:inherit; transition:.15s;
+  }
+  .import-row input::placeholder{ color:#5f6b83; }
+  .import-row input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .import-row button{
+    border:1px solid var(--border-strong); background:var(--panel-2);
+    color:var(--text); padding:8px 14px; border-radius:9px;
+    font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;
+    transition:.15s; white-space:nowrap;
+  }
+  .import-row button:hover{ background:#1a2740; border-color:var(--accent); }
+  .import-row button:active{ background:#0d1526; }
+
+  .import-msg{
+    font-size:11px; line-height:1.5;
+    color:var(--muted);
+    margin:0 0 8px; padding:0 3px;
+  }
+  .import-msg:empty{ display:none; }
+  .import-msg.ok{ color:#4ade80; }
+  .import-msg.warn{ color:#fbbf24; }
+  .import-msg.err{ color:#f87171; }
+
   .preview-box{
     min-height:92px; border-radius:13px; padding:14px;
     display:flex; align-items:center; justify-content:center;
@@ -406,6 +438,14 @@
           </button>
         </div>
       </div>
+
+      <div class="import-row">
+        <input id="importInput" type="text" data-i18n-ph="importPlaceholder"
+               placeholder="粘贴图标 ID，用逗号分隔，例如 js,html,css" autocomplete="off" />
+        <button id="importBtn" type="button" data-i18n="importBtn">导入</button>
+      </div>
+      <div class="import-msg" id="importMsg"></div>
+
       <ul class="selected-list" id="selectedList"></ul>
     </div>
 
@@ -458,7 +498,13 @@ const I18N = {
     selectedCountHtml: n => `已选 <b>${n}</b> 个图标`,
     totalCountHtml: n => `共 <b>${n}</b> 个可用图标`,
     countUnit: n => `${n} 个`,
-    footer: '图标由 <a href="https://skillicons.dev" target="_blank" rel="noopener">skillicons.dev</a> 提供 · 本页面仅用于生成配置代码'
+    footer: '图标由 <a href="https://skillicons.dev" target="_blank" rel="noopener">skillicons.dev</a> 提供 · 本页面仅用于生成配置代码',
+    /* 导入相关 */
+    importPlaceholder: '粘贴图标 ID，用逗号分隔，例如 js,html,css',
+    importBtn: '导入',
+    importEmpty: '未找到有效的图标 ID',
+    importOk: n => `成功导入 ${n} 个图标`,
+    importPartial: (ok, bad) => `成功导入 ${ok} 个，忽略 ${bad} 个无效 ID`
   },
   en: {
     title: 'Image Builder',
@@ -485,7 +531,13 @@ const I18N = {
     selectedCountHtml: n => `<b>${n}</b> selected`,
     totalCountHtml: n => `<b>${n}</b> available`,
     countUnit: n => n === 1 ? '1 icon' : `${n} icons`,
-    footer: 'Icons by <a href="https://skillicons.dev" target="_blank" rel="noopener">skillicons.dev</a> · This page only generates configuration code'
+    footer: 'Icons by <a href="https://skillicons.dev" target="_blank" rel="noopener">skillicons.dev</a> · This page only generates configuration code',
+    /* Import */
+    importPlaceholder: 'Paste icon IDs separated by commas, e.g. js,html,css',
+    importBtn: 'Import',
+    importEmpty: 'No valid icon IDs found',
+    importOk: n => `Imported ${n} icon${n === 1 ? '' : 's'}`,
+    importPartial: (ok, bad) => `Imported ${ok}, ignored ${bad} invalid ID${bad === 1 ? '' : 's'}`
   }
 };
 
@@ -511,6 +563,9 @@ scala sklearn selenium sentry sequelize sketchup solidity solidjs svelte svg swi
 tailwind tauri tensorflow terraform threejs twitter ts ubuntu unity unreal v vala vercel vim
 visualstudio vite vitest vscode vscodium vue vuetify wasm webflow webpack webstorm windicss
 windows wordpress workers xd yarn yew zig`.trim().split(/\s+/);
+
+/* 用于 O(1) 查询的 Set */
+const ICON_SET = new Set(ICONS);
 
 const BASE = 'https://skillicons.dev/icons';
 
@@ -556,6 +611,9 @@ const copyBtn         = document.getElementById('copyBtn');
 const sortBtn         = document.getElementById('sortBtn');
 const sortLabel       = document.getElementById('sortLabel');
 const langSelect      = document.getElementById('langSelect');
+const importInput     = document.getElementById('importInput');
+const importBtn       = document.getElementById('importBtn');
+const importMsg       = document.getElementById('importMsg');
 
 const cards = new Map(); // id -> element
 
@@ -765,14 +823,20 @@ searchInput.addEventListener('input', () => {
 });
 
 /* =========================================================
-   主题切换
+   主题切换（供 UI 与导入共用）
    ========================================================= */
+function setTheme(theme) {
+  state.theme = theme;
+  [...themeSeg.children].forEach(b =>
+    b.classList.toggle('active', b.dataset.theme === theme)
+  );
+  themeVal.textContent = theme;
+}
+
 themeSeg.addEventListener('click', e => {
   const btn = e.target.closest('button[data-theme]');
   if (!btn) return;
-  state.theme = btn.dataset.theme;
-  [...themeSeg.children].forEach(b => b.classList.toggle('active', b === btn));
-  themeVal.textContent = state.theme;
+  setTheme(btn.dataset.theme);
   sync();
 });
 
@@ -785,10 +849,16 @@ function paintRange() {
   perlineInput.style.setProperty('--fill', pct + '%');
 }
 
-perlineInput.addEventListener('input', () => {
-  state.perline = +perlineInput.value;
-  perlineVal.textContent = state.perline;
+function setPerline(v) {
+  const n = Math.min(50, Math.max(1, v));
+  state.perline = n;
+  perlineInput.value = n;
+  perlineVal.textContent = n;
   paintRange();
+}
+
+perlineInput.addEventListener('input', () => {
+  setPerline(+perlineInput.value);
   sync();
 });
 
@@ -821,6 +891,82 @@ sortBtn.addEventListener('click', () => {
   sortDir = sortDir === 'asc' ? 'desc' : 'asc';
   updateSortBtn();
   sync();
+});
+
+/* =========================================================
+   导入已选
+   ========================================================= */
+let importMsgTimer = null;
+
+function showImportMsg(text, type) {
+  importMsg.textContent = text;
+  importMsg.className = 'import-msg' + (type ? ' ' + type : '');
+  clearTimeout(importMsgTimer);
+  importMsgTimer = setTimeout(() => {
+    importMsg.textContent = '';
+    importMsg.className = 'import-msg';
+  }, 4200);
+}
+
+function doImport() {
+  const raw = importInput.value.trim();
+  if (!raw) return;
+
+  let text = raw;
+
+  /* 若粘贴的是完整 URL，提取 i= 参数，并顺带应用 theme / perline */
+  if (/skillicons\.dev|\?i=/.test(raw)) {
+    const iMatch = raw.match(/[?&]i=([^&\s]+)/);
+    if (iMatch) text = decodeURIComponent(iMatch[1]);
+
+    const tm = raw.match(/[?&]theme=(light|dark)/);
+    if (tm) setTheme(tm[1]);
+
+    const pm = raw.match(/[?&]perline=(\d+)/);
+    if (pm) setPerline(parseInt(pm[1], 10));
+  }
+
+  /* 按逗号 / 空格 / 换行拆分，去重并校验 */
+  const tokens = text
+    .split(/[,\s]+/)
+    .map(s => s.trim().toLowerCase())
+    .filter(Boolean);
+
+  const valid = [];
+  const invalid = [];
+  const seen = new Set();
+
+  tokens.forEach(id => {
+    if (seen.has(id)) return;
+    seen.add(id);
+    if (ICON_SET.has(id)) valid.push(id);
+    else invalid.push(id);
+  });
+
+  const d = dict();
+
+  if (valid.length === 0) {
+    showImportMsg(d.importEmpty, 'err');
+    return;
+  }
+
+  state.selected = valid;
+  sync();
+
+  if (invalid.length > 0) {
+    showImportMsg(d.importPartial(valid.length, invalid.length), 'warn');
+  } else {
+    showImportMsg(d.importOk(valid.length), 'ok');
+  }
+}
+
+importBtn.addEventListener('click', doImport);
+
+importInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    doImport();
+  }
 });
 
 /* =========================================================
