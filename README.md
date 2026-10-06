@@ -4,6 +4,8 @@
 
 A lightweight web editor that lets you select, configure, and export [Skill Icons](https://skillicons.dev) for your GitHub README or résumé.
 
+Try it on https://skillicons-imagebuilder.netlify.app
+
 ## ✨ Features
 
 - **Icon Picker** – Browse and toggle from 200+ official Skill Icons
