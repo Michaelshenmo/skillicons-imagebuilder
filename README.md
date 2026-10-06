@@ -6,6 +6,8 @@ A lightweight web editor that lets you select, configure, and export [Skill Icon
 
 Try it on https://skillicons-imagebuilder.netlify.app
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/e8f76081-4c69-446c-8990-9a2f67758326/deploy-status)](https://skillicons-imagebuilder.netlify.app)
+
 ## ✨ Features
 
 - **Icon Picker** – Browse and toggle from 200+ official Skill Icons
